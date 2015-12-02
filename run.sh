@@ -1,9 +1,15 @@
 #!sh
 
+N=$1
+NTHREADS=$2
+THETA=$3
+RHO=$4
+
 for i in std std_tcmalloc std_tbb tbb_scalable tbb_allocator
 do
-    if [ ! -s $i.$1.time.txt ]
+    OFILE=$i.$NTHREADS.N$N.t$THETA.r$RHO.time.txt
+    if [ ! -s $OFILE ]
     then
-	/usr/bin/time -f "%e %M" -o $i.$1.time.txt ./$i 10000 $1 500 500
+	/usr/bin/time -f "%e %M" -o $OFILE ./$i $N $NTHREADS $THETA $RHO
     fi
 done
