@@ -4,6 +4,7 @@ GSL=-lgsl -lgslcblas
 TCM=-ltcmalloc
 TBBPRX=-ltbbmalloc_proxy
 TBB=-ltbb -ltbbmalloc
+
 all: std.o tbb_scalable.o tbb_allocator.o tbb_caa.o boost_fast_pool.o
 	$(CXX) -o std std.o -pthread $(GSL)
 	$(CXX) -o std_tcmalloc std.o -pthread $(GSL) $(TCM)
@@ -13,6 +14,9 @@ all: std.o tbb_scalable.o tbb_allocator.o tbb_caa.o boost_fast_pool.o
 	$(CXX) -o tbb_caa tbb_caa.o -pthread $(GSL) $(TBB)
 	$(CXX) -o boost_fast_pool boost_fast_pool.o -pthread $(GSL) -lboost_system
 clean:
+	for i in $(shell find . -maxdepth 1 -type f -executable); do \
+		rm -f $$i; \
+	done
 	rm -f *.o
 
 EVOLVE=evolve.hpp
