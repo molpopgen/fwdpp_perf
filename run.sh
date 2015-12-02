@@ -1,6 +1,9 @@
 #!sh
 
-for i in std std_tcmalloc std_tbb
+for i in std std_tcmalloc std_tbb tbb_scalable tbb_allocator
 do
-    /usr/bin/time -f "%e %M" -o $i.$1.time.txt ./$i 10000 $1 2500 2500
+    if [ ! -s $i.$1.time.txt ]
+    then
+	/usr/bin/time -f "%e %M" -o $i.$1.time.txt ./$i 10000 $1 500 500
+    fi
 done
