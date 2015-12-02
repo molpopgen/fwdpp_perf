@@ -5,7 +5,8 @@ NTHREADS=$2
 THETA=$3
 RHO=$4
 
-for i in std std_tcmalloc std_tbb tbb_scalable tbb_allocator
+#Find all executables in cwd, assume they are examples, and run them
+for i in $(find . -maxdepth 1 -executable -type f)
 do
     OFILE=$i.$NTHREADS.N$N.t$THETA.r$RHO.time.txt
     if [ ! -s $OFILE ]
