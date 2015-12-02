@@ -26,6 +26,6 @@ There will never be a configure script or whatnot to check for dependencies.  Th
 
 The executables compiled are a set of binaries that simuate a neutral Wright-Fisher model of $N$ diploids for $10N$ generations with parameters $\theta=4N\mu$ and $\rho=4Nr$.
 
-Each executable is the same code.  They differ in the use of internal memory allocators, external memory allocation libraries, etc.
+Each executable is essentially the same code, in the sense that they all call the same "evolve" function with the same sets of seeds.  They differ in the use of internal memory allocators, external memory allocation libraries, etc.
 
 The programs all generate the same output, because they use the same random number seed.
