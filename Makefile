@@ -21,8 +21,13 @@ clean:
 
 EVOLVE=evolve.hpp
 
-std.o: $(EVOLVE)
-tbb_scalable.o: $(EVOLVE)
-tbb_allocator.o: $(EVOLVE)
-tbb_caa.o: $(EVOLVE)
-boost_fast_pool.o: $(EVOLVE)
+std.o: $(EVOLVE) simulate.cc
+	$(CXX) $(CXXFLAGS) -o std.o -c simulate.cc
+tbb_scalable.o: $(EVOLVE) simulate.cc
+	$(CXX) -DUSE_INTEL_SCALABLE_ALLOCATOR $(CXXFLAGS) -o tbb_scalable.o -c simulate.cc
+tbb_allocator.o: $(EVOLVE) simulate.cc
+	$(CXX) -DUSE_INTEL_ALLOCATOR $(CXXFLAGS) -o tbb_allocator.o -c simulate.cc
+tbb_caa.o: $(EVOLVE) simulate.cc
+	$(CXX) -DUSE_INTEL_CACHE_ALIGNED_ALLOCATOR $(CXXFLAGS) -o tbb_caa.o -c simulate.cc
+boost_fast_pool.o: $(EVOLVE) simulate.cc
+	$(CXX) $(CXXFLAGS) -DUSE_BOOST -o boost_fast_pool.o -c simulate.cc
