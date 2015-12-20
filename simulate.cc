@@ -4,81 +4,56 @@
 #include <iostream>
 #include <functional>
 #include <mutex>
+#include <chrono>
 #include <fwdpp/diploid.hh>
-#ifdef USE_BOOST
-#define FWDPP_SUGAR_USE_BOOST
-#endif
 #include <fwdpp/sugar.hpp>
 
 using namespace std;
 using namespace KTfwd;
 
-#ifdef USE_INTEL_ALLOCATOR
+#ifdef USE_BOOST
+#include <boost/pool/pool_alloc.hpp>
+template<typename T> using allocator_t = boost::fast_pool_allocator<T>;
+#elif defined USE_INTEL_ALLOCATOR
 #include <tbb/tbb_allocator.h>
-namespace this_program {
-  template<typename mtype> using singlepop_mlist_t = std::list<mtype,tbb::tbb_allocator<mtype> >;
-  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype, singlepop_mlist_t<mtype> >;
-  template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>,
-							       tbb::tbb_allocator<singlepop_gamete_t<mtype> > >;
-  template<typename mtype> using diploid_t = std::pair<typename singlepop_glist_t<mtype>::iterator,
-						       typename singlepop_glist_t<mtype>::iterator>;
-}
-
-using singlepop_t = KTfwd::sugar::singlepop_serialized<KTfwd::popgenmut,
-						       KTfwd::mutation_writer,
-						       KTfwd::mutation_reader<KTfwd::popgenmut>,
-						       this_program::singlepop_mlist_t<popgenmut>,
-						       this_program::singlepop_glist_t<popgenmut>,
-						       vector< this_program::diploid_t<popgenmut> >,
-						       vector<popgenmut>,
-						       vector<uint_t>,
-						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >;
+template<typename T> using allocator_t = tbb::tbb_allocator<T>;
 #elif defined USE_INTEL_SCALABLE_ALLOCATOR
 #include <tbb/scalable_allocator.h>
-namespace this_program {
-  template<typename mtype> using singlepop_mlist_t = std::list<mtype,tbb::scalable_allocator<mtype> >;
-  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype, singlepop_mlist_t<mtype> >;
-  template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>,
-							       tbb::scalable_allocator<singlepop_gamete_t<mtype> > >;
-  template<typename mtype> using diploid_t = std::pair<typename singlepop_glist_t<mtype>::iterator,
-						       typename singlepop_glist_t<mtype>::iterator>;
-}
-
-using singlepop_t = KTfwd::sugar::singlepop_serialized<KTfwd::popgenmut,
-						       KTfwd::mutation_writer,
-						       KTfwd::mutation_reader<KTfwd::popgenmut>,
-						       this_program::singlepop_mlist_t<popgenmut>,
-						       this_program::singlepop_glist_t<popgenmut>,
-						       vector< this_program::diploid_t<popgenmut> >,
-						       vector<popgenmut>,
-						       vector<uint_t>,
-						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >;
+template<typename T> using allocator_t = tbb::scalable_allocator<T>;
 #elif defined USE_INTEL_CACHE_ALIGNED_ALLOCATOR
 #include <tbb/cache_aligned_allocator.h>
+template<typename T> using allocator_t = tbb::cache_aligned_allocator<T>;
+#else
+#include <memory>
+template<typename T> using allocator_t = std::allocator<T>;
+#endif
 namespace this_program {
-  template<typename mtype> using singlepop_mlist_t = std::list<mtype,tbb::cache_aligned_allocator<mtype> >;
-  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype, singlepop_mlist_t<mtype> >;
-  template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>,
-							       tbb::cache_aligned_allocator<singlepop_gamete_t<mtype> > >;
-  template<typename mtype> using diploid_t = std::pair<typename singlepop_glist_t<mtype>::iterator,
-						       typename singlepop_glist_t<mtype>::iterator>;
+  template<typename mtype> using singlepop_mlist_t = std::list<mtype,allocator_t<mtype> >;
+  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mlist_t<mtype> >;
+  template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>, allocator_t<singlepop_gamete_t<mtype> > >;
+  template<typename mtype> using diploid_t = std::pair<typename this_program::singlepop_glist_t<mtype>::iterator,typename this_program::singlepop_glist_t<mtype>::iterator>;
 }
 
-using singlepop_t = KTfwd::sugar::singlepop_serialized<KTfwd::popgenmut,
-						       KTfwd::mutation_writer,
-						       KTfwd::mutation_reader<KTfwd::popgenmut>,
-						       this_program::singlepop_mlist_t<popgenmut>,
-						       this_program::singlepop_glist_t<popgenmut>,
-						       vector< this_program::diploid_t<popgenmut> >,
-						       vector<popgenmut>,
-						       vector<uint_t>,
-						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >;
-#else
-using singlepop_t = KTfwd::singlepop_serialized<KTfwd::popgenmut,
-						KTfwd::mutation_writer,
-						KTfwd::mutation_reader<KTfwd::popgenmut> >;
-#endif
-
+struct singlepop_t : public KTfwd::sugar::singlepop<KTfwd::popgenmut,
+						    this_program::singlepop_mlist_t<popgenmut>,
+						    this_program::singlepop_glist_t<popgenmut>,
+						    vector< this_program::diploid_t<popgenmut> >,
+						    vector<popgenmut>,
+						    vector<uint_t>,
+						    std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >
+{
+  using base_t = KTfwd::sugar::singlepop<KTfwd::popgenmut,
+					 this_program::singlepop_mlist_t<popgenmut>,
+					 this_program::singlepop_glist_t<popgenmut>,
+					 vector< this_program::diploid_t<popgenmut> >,
+					 vector<popgenmut>,
+					 vector<uint_t>,
+					 std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >;
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  singlepop_t(KTfwd::uint_t N) : base_t(N)
+  {
+  }
+};
 mutex locker;
 
 #include <evolve.hpp>
@@ -102,5 +77,10 @@ int main(int argc, char **argv)
     }
 
   for(uint_t i=0;i<nt;++i) threads[i].join();
+  for(uint_t i=0;i<nt;++i)
+    {
+      chrono::duration<double> elapsed_seconds = pops[i]->end-pops[i]->start;
+      cout << elapsed_seconds.count() << '\n';
+    }
 }
 

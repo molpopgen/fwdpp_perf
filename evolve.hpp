@@ -19,6 +19,7 @@ void evolve_t( T * pop,
   GSLrng_t<GSL_RNG_MT19937> rng(seed);
   auto recmap = [&rng](){return gsl_rng_uniform(rng.get());};
   const double mu = theta/double(4*Nlist[0]),r=rho/double(4*Nlist[0]);
+  pop->start = std::chrono::system_clock::now();
   for(size_t i =  0 ; i < Nlist_len ; ++i )
     {
       double wbar = sample_diploid(rng.get(),
@@ -43,6 +44,7 @@ void evolve_t( T * pop,
 				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*Nlist[i]));
       	  KTfwd::remove_fixed_lost(&pop->mutations,&pop->fixations,&pop->fixation_times,&pop->mut_lookup,i,2*Nlist[i]);
     }
+  pop->end = std::chrono::system_clock::now();
 }
 
 #endif
