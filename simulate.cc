@@ -12,6 +12,7 @@ using namespace std;
 using namespace KTfwd;
 
 #ifdef USE_BOOST
+#include <boost/container/list.hpp>
 #include <boost/pool/pool_alloc.hpp>
 template<typename T> using allocator_t = boost::fast_pool_allocator<T>;
 #elif defined USE_INTEL_ALLOCATOR
@@ -28,9 +29,17 @@ template<typename T> using allocator_t = tbb::cache_aligned_allocator<T>;
 template<typename T> using allocator_t = std::allocator<T>;
 #endif
 namespace this_program {
+#ifdef USE_BOOST
+  template<typename mtype> using singlepop_mlist_t = boost::container::list<mtype,allocator_t<mtype> >;
+#else
   template<typename mtype> using singlepop_mlist_t = std::list<mtype,allocator_t<mtype> >;
+#endif
   template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mlist_t<mtype> >;
+#ifdef USE_BOOST
+  template<typename mtype> using singlepop_glist_t = boost::container::list<singlepop_gamete_t<mtype>, allocator_t<singlepop_gamete_t<mtype> > >;
+#else
   template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>, allocator_t<singlepop_gamete_t<mtype> > >;
+#endif
   template<typename mtype> using diploid_t = std::pair<typename this_program::singlepop_glist_t<mtype>::iterator,typename this_program::singlepop_glist_t<mtype>::iterator>;
 }
 
