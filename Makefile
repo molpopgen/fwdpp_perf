@@ -1,4 +1,4 @@
-B1;2cCXX=c++
+CXX=c++
 CXXFLAGS=-$(CPPFLAGS) I. -std=c++11 -O2 -Wall -W -DNDEBUG -pthread
 GSL=-lgsl -lgslcblas
 TCM=-ltcmalloc
