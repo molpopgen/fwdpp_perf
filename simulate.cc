@@ -92,4 +92,3 @@ int main(int argc, char **argv)
       cout << elapsed_seconds.count() << '\n';
     }
 }
-
