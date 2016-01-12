@@ -12,7 +12,7 @@ using namespace std;
 using namespace KTfwd;
 
 #ifdef USE_BOOST
-#include <boost/container/list.hpp>
+#include <boost/container/vector.hpp>
 #include <boost/pool/pool_alloc.hpp>
 template<typename T> using allocator_t = boost::fast_pool_allocator<T>;
 #elif defined USE_INTEL_ALLOCATOR
@@ -30,30 +30,31 @@ template<typename T> using allocator_t = std::allocator<T>;
 #endif
 namespace this_program {
 #ifdef USE_BOOST
-  template<typename mtype> using singlepop_mlist_t = boost::container::list<mtype,allocator_t<mtype> >;
+  template<typename mtype> using singlepop_mvector_t = boost::container::vector<mtype,allocator_t<mtype> >;
 #else
-  template<typename mtype> using singlepop_mlist_t = std::list<mtype,allocator_t<mtype> >;
+  template<typename mtype> using singlepop_mvector_t = std::vector<mtype,allocator_t<mtype> >;
 #endif
-  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mlist_t<mtype> >;
+  using singlepop_gamete_t = gamete;
+  //template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mvector_t<mtype> >;
 #ifdef USE_BOOST
-  template<typename mtype> using singlepop_glist_t = boost::container::list<singlepop_gamete_t<mtype>, allocator_t<singlepop_gamete_t<mtype> > >;
+  template<typename mtype> using singlepop_gvector_t = boost::container::vector<singlepop_gamete_t, allocator_t<singlepop_gamete_t > >;
 #else
-  template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>, allocator_t<singlepop_gamete_t<mtype> > >;
+  template<typename mtype> using singlepop_gvector_t = std::vector<singlepop_gamete_t, allocator_t<singlepop_gamete_t > >;
 #endif
-  template<typename mtype> using diploid_t = std::pair<typename this_program::singlepop_glist_t<mtype>::iterator,typename this_program::singlepop_glist_t<mtype>::iterator>;
+  template<typename mtype> using diploid_t = std::pair<std::size_t,std::size_t>;
 }
 
 struct singlepop_t : public KTfwd::sugar::singlepop<KTfwd::popgenmut,
-						    this_program::singlepop_mlist_t<popgenmut>,
-						    this_program::singlepop_glist_t<popgenmut>,
+						    this_program::singlepop_mvector_t<popgenmut>,
+						    this_program::singlepop_gvector_t<popgenmut>,
 						    vector< this_program::diploid_t<popgenmut> >,
 						    vector<popgenmut>,
 						    vector<uint_t>,
 						    std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >
 {
   using base_t = KTfwd::sugar::singlepop<KTfwd::popgenmut,
-					 this_program::singlepop_mlist_t<popgenmut>,
-					 this_program::singlepop_glist_t<popgenmut>,
+					 this_program::singlepop_mvector_t<popgenmut>,
+					 this_program::singlepop_gvector_t<popgenmut>,
 					 vector< this_program::diploid_t<popgenmut> >,
 					 vector<popgenmut>,
 					 vector<uint_t>,
