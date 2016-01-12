@@ -14,7 +14,7 @@ void evolve_t( T * pop,
 {
   using namespace KTfwd;
   locker.lock();
-  std::cout << "I got seed " << seed << '\n';
+  std::cerr << "I got seed " << seed << '\n';
   locker.unlock();
   GSLrng_t<GSL_RNG_MT19937> rng(seed);
   const double mu = theta/double(4*Nlist[0]),r=rho/double(4*Nlist[0]);
