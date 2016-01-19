@@ -4,8 +4,9 @@ GSL=-lgsl -lgslcblas
 TCM=-ltcmalloc
 TBBPRX=-ltbbmalloc_proxy
 TBB=-ltbb -ltbbmalloc
+MPILIBS=-lmpi
 
-all: std tcmalloc tbb boost
+all: std tcmalloc tbb boost mpi
 
 std: std.o
 	$(CXX) -o std std.o -pthread $(LDFLAGS) $(GSL)
@@ -21,6 +22,9 @@ tbb: tbb_scalable.o tbb_allocator.o tbb_caa.o
 
 boost: boost_fast_pool.o
 	$(CXX) -o boost_fast_pool boost_fast_pool.o -pthread $(LDFLAGS) $(GSL) -lboost_system
+
+mpi: neutral_mpi.o
+	$(CXX) -o neutral_mpi neutral_mpi.o $(LDFLAGS) $(GSL) $(MPILIBS)
 
 clean:
 	for i in $(shell find . -maxdepth 1 -type f -executable); do \
@@ -40,3 +44,4 @@ tbb_caa.o: $(EVOLVE) simulate.cc
 	$(CXX) -DUSE_INTEL_CACHE_ALIGNED_ALLOCATOR $(CXXFLAGS) -o tbb_caa.o -c simulate.cc
 boost_fast_pool.o: $(EVOLVE) simulate.cc
 	$(CXX) $(CXXFLAGS) -DUSE_BOOST -o boost_fast_pool.o -c simulate.cc
+neutral_mpi.o: $(EVOLVE) neutral_mpi.cc
