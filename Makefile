@@ -1,5 +1,5 @@
 CXX=c++
-CXXFLAGS=$(CPPFLAGS) -I. -std=c++11 -O2 -Wall -W -DNDEBUG -pthread
+CXXFLAGS=$(CPPFLAGS) -I. -std=c++11 -O2 -g -Wall -W -DNDEBUG -pthread
 GSL=-lgsl -lgslcblas
 TCM=-ltcmalloc
 TBBPRX=-ltbbmalloc_proxy

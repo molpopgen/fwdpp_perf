@@ -3,13 +3,13 @@
 #include <utility>
 #include <iostream>
 #include <functional>
+#include <cmath>
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar.hpp>
 #include <evolve.hpp>
 
 using namespace std;
 using namespace KTfwd;
-
 
 
 int main(int argc, char **argv)
@@ -24,9 +24,11 @@ int main(int argc, char **argv)
   vector<thread> threads;
   GSLrng_t<GSL_RNG_MT19937> rng(101);
   std::vector<uint_t> Nlist(10*N,N);
+  const std::size_t ES = std::log(2*N)*theta + (2./3.)*theta;
   for(uint_t i=0;i<nt;++i)
     {
       pops.emplace_back(make_shared<::singlepop_t>(singlepop_t(N)));
+      pops[i]->mutations.reserve(ES);
       threads.emplace_back( thread( evolve_t,pops[i].get(), gsl_rng_get(rng.get()),&Nlist[0],Nlist.size(),theta,rho) );
     }
 
