@@ -20,18 +20,16 @@ using namespace KTfwd;
 using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<popgenmut>;
 
-struct singlepop_t : public KTfwd::singlepop<KTfwd::popgenmut>
+// struct singlepop_t : public KTfwd::singlepop<KTfwd::popgenmut>
 						    
-{
-  using base_t = KTfwd::singlepop<KTfwd::popgenmut>;
-  std::chrono::time_point<std::chrono::system_clock> start, end;
-  singlepop_t(KTfwd::uint_t N) : base_t(N)
-  {
-  }
-  singlepop_t(singlepop_t &&) = default;
-};
-
-mutex locker;
+// {
+//   using base_t = KTfwd::singlepop<KTfwd::popgenmut>;
+//   std::chrono::time_point<std::chrono::system_clock> start, end;
+//   singlepop_t(KTfwd::uint_t N) : base_t(N)
+//   {
+//   }
+//   singlepop_t(singlepop_t &&) = default;
+// };
 
 #include <evolve.hpp>
 
