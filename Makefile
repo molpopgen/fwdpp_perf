@@ -32,7 +32,7 @@ clean:
 	done
 	rm -f *.o
 
-EVOLVE=evolve.hpp
+EVOLVE=evolve.hpp singlepop_t.hpp
 
 std.o: $(EVOLVE) simulate.cc
 	$(CXX) $(CXXFLAGS) -o std.o -c simulate.cc
