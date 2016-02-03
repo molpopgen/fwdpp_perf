@@ -29,7 +29,6 @@ namespace this_program {
   template<typename mtype> using singlepop_mvector_t = std::vector<mtype,allocator_t<mtype> >;
 #endif
   using singlepop_gamete_t = KTfwd::gamete;
-  //template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mvector_t<mtype> >;
 #ifdef USE_BOOST
   template<typename mtype> using singlepop_gvector_t = boost::container::vector<singlepop_gamete_t, allocator_t<singlepop_gamete_t > >;
 #else
