@@ -14,6 +14,9 @@ std: std.o std_evolve.o
 std_async: std_async.o evolve.o
 	$(CXX) -o std_async std_async.o evolve.o -pthread $(LDFLAGS) $(GSL)
 
+std_sampler: std_sampler.o
+	$(CXX) -o std_sampler std_sampler.o -pthread $(LDFLAGS) $(GSL)
+
 tcmalloc: std.o std_evolve.o
 	$(CXX) -o std_tcmalloc std.o std_evolve.o -pthread $(LDFLAGS) $(GSL) $(TCM)
 
@@ -43,6 +46,8 @@ std_evolve.o: $(EVOLVE) evolve.cc
 	$(CXX) $(CXXFLAGS) -o std_evolve.o -c evolve.cc
 std_async.o: $(EVOLVE) simulate_async.cc
 	$(CXX) $(CXXFLAGS) -o std_async.o -c simulate_async.cc
+std_sampler.o: $(EVOLVE) simulate_sampler.cc
+	$(CXX) $(CXXFLAGS) -o std_sampler.o -c simulate_sampler.cc
 
 tbb_scalable.o: $(EVOLVE) simulate.cc
 	$(CXX) -DUSE_INTEL_SCALABLE_ALLOCATOR $(CXXFLAGS) -o tbb_scalable.o -c simulate.cc
