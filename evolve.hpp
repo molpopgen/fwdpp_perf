@@ -24,7 +24,7 @@ inline auto evolve_sample_t( singlepop_t * pop,
 			     const double theta,
 			     const double rho,
 			     const sampler & s,
-			     const int interval) -> std::vector<std::pair<unsigned,typename sampler::result_type> >
+			     const int interval) -> std::vector<std::pair<unsigned,typename std::result_of<sampler(const singlepop_t *, gsl_rng *)>::type> >
   
 {
   using namespace KTfwd;
@@ -41,8 +41,8 @@ inline auto evolve_sample_t( singlepop_t * pop,
   const auto fitness_model = std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
 				       std::placeholders::_3,2.);
   const std::vector<KTfwd::uint_t> Ns(Nlist,Nlist+Nlist_len);
-  //std::vector<decltype(s(pop))> rv;
-  std::vector<std::pair<unsigned,typename sampler::result_type> > rv;
+  using result_type = typename std::result_of<sampler(const singlepop_t *, gsl_rng *)>::type;
+  std::vector<std::pair<unsigned,result_type> > rv;
   for(const auto & N : Ns)
     {
       if(interval && i%interval==0.) rv.emplace_back( i,s(pop,rng.get()) );
