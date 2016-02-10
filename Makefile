@@ -6,10 +6,13 @@ TBBPRX=-ltbbmalloc_proxy
 TBB=-ltbb -ltbbmalloc
 MPILIBS=-lmpi
 
-all: std tcmalloc tbb boost mpi
+all: std std_async tcmalloc tbb boost mpi
 
 std: std.o std_evolve.o
 	$(CXX) -o std std.o std_evolve.o -pthread $(LDFLAGS) $(GSL)
+
+std_async: std_async.o evolve.o
+	$(CXX) -o std_async std_async.o evolve.o -pthread $(LDFLAGS) $(GSL)
 
 tcmalloc: std.o std_evolve.o
 	$(CXX) -o std_tcmalloc std.o std_evolve.o -pthread $(LDFLAGS) $(GSL) $(TCM)
@@ -38,6 +41,8 @@ std.o: $(EVOLVE) simulate.cc
 	$(CXX) $(CXXFLAGS) -o std.o -c simulate.cc
 std_evolve.o: $(EVOLVE) evolve.cc
 	$(CXX) $(CXXFLAGS) -o std_evolve.o -c evolve.cc
+std_async.o: $(EVOLVE) simulate_async.cc
+	$(CXX) $(CXXFLAGS) -o std_async.o -c simulate_async.cc
 
 tbb_scalable.o: $(EVOLVE) simulate.cc
 	$(CXX) -DUSE_INTEL_SCALABLE_ALLOCATOR $(CXXFLAGS) -o tbb_scalable.o -c simulate.cc
